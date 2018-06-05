@@ -1,0 +1,191 @@
+building dataset from train_list.txt
+read meta done
+building dataset from test_list.txt
+read meta done
+odict_keys(['module.stage1.0.weight', 'module.stage1.0.bias', 'module.stage2.0.bn1.weight', 'module.stage2.0.bn1.bias', 'module.stage2.0.bn1.running_mean', 'module.stage2.0.bn1.running_var', 'module.stage2.0.conv1.weight', 'module.stage2.0.conv1.bias', 'module.stage2.0.bn2.weight', 'module.stage2.0.bn2.bias', 'module.stage2.0.bn2.running_mean', 'module.stage2.0.bn2.running_var', 'module.stage2.0.conv2.weight', 'module.stage2.0.conv2.bias', 'module.stage2.0.bn3.weight', 'module.stage2.0.bn3.bias', 'module.stage2.0.bn3.running_mean', 'module.stage2.0.bn3.running_var', 'module.stage2.0.conv3.weight', 'module.stage2.0.conv3.bias', 'module.stage2.0.downsample.weight', 'module.stage2.0.downsample.bias', 'module.stage2.1.bn1.weight', 'module.stage2.1.bn1.bias', 'module.stage2.1.bn1.running_mean', 'module.stage2.1.bn1.running_var', 'module.stage2.1.conv1.weight', 'module.stage2.1.conv1.bias', 'module.stage2.1.bn2.weight', 'module.stage2.1.bn2.bias', 'module.stage2.1.bn2.running_mean', 'module.stage2.1.bn2.running_var', 'module.stage2.1.conv2.weight', 'module.stage2.1.conv2.bias', 'module.stage2.1.bn3.weight', 'module.stage2.1.bn3.bias', 'module.stage2.1.bn3.running_mean', 'module.stage2.1.bn3.running_var', 'module.stage2.1.conv3.weight', 'module.stage2.1.conv3.bias', 'module.stage3.0.bn1.weight', 'module.stage3.0.bn1.bias', 'module.stage3.0.bn1.running_mean', 'module.stage3.0.bn1.running_var', 'module.stage3.0.conv1.weight', 'module.stage3.0.conv1.bias', 'module.stage3.0.bn2.weight', 'module.stage3.0.bn2.bias', 'module.stage3.0.bn2.running_mean', 'module.stage3.0.bn2.running_var', 'module.stage3.0.conv2.weight', 'module.stage3.0.conv2.bias', 'module.stage3.0.bn3.weight', 'module.stage3.0.bn3.bias', 'module.stage3.0.bn3.running_mean', 'module.stage3.0.bn3.running_var', 'module.stage3.0.conv3.weight', 'module.stage3.0.conv3.bias', 'module.stage3.0.downsample.weight', 'module.stage3.0.downsample.bias', 'module.stage3.1.bn1.weight', 'module.stage3.1.bn1.bias', 'module.stage3.1.bn1.running_mean', 'module.stage3.1.bn1.running_var', 'module.stage3.1.conv1.weight', 'module.stage3.1.conv1.bias', 'module.stage3.1.bn2.weight', 'module.stage3.1.bn2.bias', 'module.stage3.1.bn2.running_mean', 'module.stage3.1.bn2.running_var', 'module.stage3.1.conv2.weight', 'module.stage3.1.conv2.bias', 'module.stage3.1.bn3.weight', 'module.stage3.1.bn3.bias', 'module.stage3.1.bn3.running_mean', 'module.stage3.1.bn3.running_var', 'module.stage3.1.conv3.weight', 'module.stage3.1.conv3.bias', 'module.stage4.0.bn1.weight', 'module.stage4.0.bn1.bias', 'module.stage4.0.bn1.running_mean', 'module.stage4.0.bn1.running_var', 'module.stage4.0.conv1.weight', 'module.stage4.0.conv1.bias', 'module.stage4.0.bn2.weight', 'module.stage4.0.bn2.bias', 'module.stage4.0.bn2.running_mean', 'module.stage4.0.bn2.running_var', 'module.stage4.0.conv2.weight', 'module.stage4.0.conv2.bias', 'module.stage4.0.bn3.weight', 'module.stage4.0.bn3.bias', 'module.stage4.0.bn3.running_mean', 'module.stage4.0.bn3.running_var', 'module.stage4.0.conv3.weight', 'module.stage4.0.conv3.bias', 'module.stage4.0.downsample.weight', 'module.stage4.0.downsample.bias', 'module.stage4.1.bn1.weight', 'module.stage4.1.bn1.bias', 'module.stage4.1.bn1.running_mean', 'module.stage4.1.bn1.running_var', 'module.stage4.1.conv1.weight', 'module.stage4.1.conv1.bias', 'module.stage4.1.bn2.weight', 'module.stage4.1.bn2.bias', 'module.stage4.1.bn2.running_mean', 'module.stage4.1.bn2.running_var', 'module.stage4.1.conv2.weight', 'module.stage4.1.conv2.bias', 'module.stage4.1.bn3.weight', 'module.stage4.1.bn3.bias', 'module.stage4.1.bn3.running_mean', 'module.stage4.1.bn3.running_var', 'module.stage4.1.conv3.weight', 'module.stage4.1.conv3.bias', 'module.stage5.0.bn1.weight', 'module.stage5.0.bn1.bias', 'module.stage5.0.bn1.running_mean', 'module.stage5.0.bn1.running_var', 'module.stage5.0.conv1.weight', 'module.stage5.0.conv1.bias', 'module.stage5.0.bn2.weight', 'module.stage5.0.bn2.bias', 'module.stage5.0.bn2.running_mean', 'module.stage5.0.bn2.running_var', 'module.stage5.0.conv2.weight', 'module.stage5.0.conv2.bias', 'module.stage5.0.bn3.weight', 'module.stage5.0.bn3.bias', 'module.stage5.0.bn3.running_mean', 'module.stage5.0.bn3.running_var', 'module.stage5.0.conv3.weight', 'module.stage5.0.conv3.bias', 'module.stage5.0.downsample.weight', 'module.stage5.0.downsample.bias', 'module.stage5.1.bn1.weight', 'module.stage5.1.bn1.bias', 'module.stage5.1.bn1.running_mean', 'module.stage5.1.bn1.running_var', 'module.stage5.1.conv1.weight', 'module.stage5.1.conv1.bias', 'module.stage5.1.bn2.weight', 'module.stage5.1.bn2.bias', 'module.stage5.1.bn2.running_mean', 'module.stage5.1.bn2.running_var', 'module.stage5.1.conv2.weight', 'module.stage5.1.conv2.bias', 'module.stage5.1.bn3.weight', 'module.stage5.1.bn3.bias', 'module.stage5.1.bn3.running_mean', 'module.stage5.1.bn3.running_var', 'module.stage5.1.conv3.weight', 'module.stage5.1.conv3.bias', 'module.fc.weight', 'module.fc.bias'])
+stage1.0.weight
+stage1.0.bias
+stage2.0.bn1.weight
+stage2.0.bn1.bias
+stage2.0.bn1.running_mean
+stage2.0.bn1.running_var
+stage2.0.conv1.weight
+stage2.0.conv1.bias
+stage2.0.bn2.weight
+stage2.0.bn2.bias
+stage2.0.bn2.running_mean
+stage2.0.bn2.running_var
+stage2.0.conv2.weight
+stage2.0.conv2.bias
+stage2.0.bn3.weight
+stage2.0.bn3.bias
+stage2.0.bn3.running_mean
+stage2.0.bn3.running_var
+stage2.0.conv3.weight
+stage2.0.conv3.bias
+stage2.0.downsample.weight
+stage2.0.downsample.bias
+stage2.1.bn1.weight
+stage2.1.bn1.bias
+stage2.1.bn1.running_mean
+stage2.1.bn1.running_var
+stage2.1.conv1.weight
+stage2.1.conv1.bias
+stage2.1.bn2.weight
+stage2.1.bn2.bias
+stage2.1.bn2.running_mean
+stage2.1.bn2.running_var
+stage2.1.conv2.weight
+stage2.1.conv2.bias
+stage2.1.bn3.weight
+stage2.1.bn3.bias
+stage2.1.bn3.running_mean
+stage2.1.bn3.running_var
+stage2.1.conv3.weight
+stage2.1.conv3.bias
+stage3.0.bn1.weight
+stage3.0.bn1.bias
+stage3.0.bn1.running_mean
+stage3.0.bn1.running_var
+stage3.0.conv1.weight
+stage3.0.conv1.bias
+stage3.0.bn2.weight
+stage3.0.bn2.bias
+stage3.0.bn2.running_mean
+stage3.0.bn2.running_var
+stage3.0.conv2.weight
+stage3.0.conv2.bias
+stage3.0.bn3.weight
+stage3.0.bn3.bias
+stage3.0.bn3.running_mean
+stage3.0.bn3.running_var
+stage3.0.conv3.weight
+stage3.0.conv3.bias
+stage3.0.downsample.weight
+stage3.0.downsample.bias
+stage3.1.bn1.weight
+stage3.1.bn1.bias
+stage3.1.bn1.running_mean
+stage3.1.bn1.running_var
+stage3.1.conv1.weight
+stage3.1.conv1.bias
+stage3.1.bn2.weight
+stage3.1.bn2.bias
+stage3.1.bn2.running_mean
+stage3.1.bn2.running_var
+stage3.1.conv2.weight
+stage3.1.conv2.bias
+stage3.1.bn3.weight
+stage3.1.bn3.bias
+stage3.1.bn3.running_mean
+stage3.1.bn3.running_var
+stage3.1.conv3.weight
+stage3.1.conv3.bias
+stage4.0.bn1.weight
+stage4.0.bn1.bias
+stage4.0.bn1.running_mean
+stage4.0.bn1.running_var
+stage4.0.conv1.weight
+stage4.0.conv1.bias
+stage4.0.bn2.weight
+stage4.0.bn2.bias
+stage4.0.bn2.running_mean
+stage4.0.bn2.running_var
+stage4.0.conv2.weight
+stage4.0.conv2.bias
+stage4.0.bn3.weight
+stage4.0.bn3.bias
+stage4.0.bn3.running_mean
+stage4.0.bn3.running_var
+stage4.0.conv3.weight
+stage4.0.conv3.bias
+stage4.0.downsample.weight
+stage4.0.downsample.bias
+stage4.1.bn1.weight
+stage4.1.bn1.bias
+stage4.1.bn1.running_mean
+stage4.1.bn1.running_var
+stage4.1.conv1.weight
+stage4.1.conv1.bias
+stage4.1.bn2.weight
+stage4.1.bn2.bias
+stage4.1.bn2.running_mean
+stage4.1.bn2.running_var
+stage4.1.conv2.weight
+stage4.1.conv2.bias
+stage4.1.bn3.weight
+stage4.1.bn3.bias
+stage4.1.bn3.running_mean
+stage4.1.bn3.running_var
+stage4.1.conv3.weight
+stage4.1.conv3.bias
+stage5.0.bn1.weight
+stage5.0.bn1.bias
+stage5.0.bn1.running_mean
+stage5.0.bn1.running_var
+stage5.0.conv1.weight
+stage5.0.conv1.bias
+stage5.0.bn2.weight
+stage5.0.bn2.bias
+stage5.0.bn2.running_mean
+stage5.0.bn2.running_var
+stage5.0.conv2.weight
+stage5.0.conv2.bias
+stage5.0.bn3.weight
+stage5.0.bn3.bias
+stage5.0.bn3.running_mean
+stage5.0.bn3.running_var
+stage5.0.conv3.weight
+stage5.0.conv3.bias
+stage5.0.downsample.weight
+stage5.0.downsample.bias
+stage5.1.bn1.weight
+stage5.1.bn1.bias
+stage5.1.bn1.running_mean
+stage5.1.bn1.running_var
+stage5.1.conv1.weight
+stage5.1.conv1.bias
+stage5.1.bn2.weight
+stage5.1.bn2.bias
+stage5.1.bn2.running_mean
+stage5.1.bn2.running_var
+stage5.1.conv2.weight
+stage5.1.conv2.bias
+stage5.1.bn3.weight
+stage5.1.bn3.bias
+stage5.1.bn3.running_mean
+stage5.1.bn3.running_var
+stage5.1.conv3.weight
+stage5.1.conv3.bias
+fc.weight
+fc.bias
+=> loaded model from checkpoint 'checkpoint/_204.pth.tar'
+=> also loaded optimizer from checkpoint 'checkpoint/_204.pth.tar' (epoch 204)
+start_epoch: 204
+Train Epoch: 204 [0/25913 (0%)]	Loss: 1.450433
+Train Epoch: 204 [1280/25913 (5%)]	Loss: 1.371134
+Train Epoch: 204 [2560/25913 (10%)]	Loss: 1.255908
+Train Epoch: 204 [3840/25913 (15%)]	Loss: 1.269222
+Train Epoch: 204 [5120/25913 (20%)]	Loss: 1.202238
+Train Epoch: 204 [6400/25913 (25%)]	Loss: 1.187028
+Train Epoch: 204 [7680/25913 (30%)]	Loss: 1.132135
+Train Epoch: 204 [8960/25913 (34%)]	Loss: 1.172332
+Train Epoch: 204 [10240/25913 (39%)]	Loss: 1.005171
+Train Epoch: 204 [11520/25913 (44%)]	Loss: 1.086386
+Train Epoch: 204 [12800/25913 (49%)]	Loss: 1.039907
+Train Epoch: 204 [14080/25913 (54%)]	Loss: 0.934461
+Train Epoch: 204 [15360/25913 (59%)]	Loss: 1.075068
+Train Epoch: 204 [16640/25913 (64%)]	Loss: 1.034091
+Train Epoch: 204 [17920/25913 (69%)]	Loss: 1.098064
+Train Epoch: 204 [19200/25913 (74%)]	Loss: 1.090688
+Train Epoch: 204 [20480/25913 (79%)]	Loss: 0.931069
+Train Epoch: 204 [21760/25913 (84%)]	Loss: 1.016762
+Train Epoch: 204 [23040/25913 (89%)]	Loss: 0.931553
+Train Epoch: 204 [24320/25913 (94%)]	Loss: 0.942335
+Train Epoch: 204 [25600/25913 (99%)]	Loss: 0.908475
+[67.0, 558.0, 0.0, 170.0, 749.0] [67.0, 558.0, 0.0, 170.0, 749.0] [90, 1237, 0, 211, 1342] [844, 807, 58, 390, 781]
+
+Test set: Average loss: 1.0227, AccuracyofAll: 1544/2880 (53.0000%), acc:[0.7444444444444445, 0.4510913500404204, 0, 0.8056872037914692, 0.5581222056631893], recall:[0.07938388625592417, 0.6914498141263941, 0.0, 0.4358974358974359, 0.9590268886043534]
+
+Train Epoch: 205 [0/25913 (0%)]	Loss: 0.888047
+Train Epoch: 205 [1280/25913 (5%)]	Loss: 0.878958

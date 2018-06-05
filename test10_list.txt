@@ -1,0 +1,10 @@
+data/galaxy/images_training_rev1/135299.jpg   1
+data/galaxy/images_training_rev1/267006.jpg   4
+data/galaxy/images_training_rev1/636558.jpg   4
+data/galaxy/images_training_rev1/404480.jpg   4
+data/galaxy/images_training_rev1/776049.jpg   3
+data/galaxy/images_training_rev1/782121.jpg   0
+data/galaxy/images_training_rev1/650362.jpg   1
+data/galaxy/images_training_rev1/230943.jpg   3
+data/galaxy/images_training_rev1/960300.jpg   4
+data/galaxy/images_training_rev1/707920.jpg   4
