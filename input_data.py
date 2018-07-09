@@ -5,6 +5,7 @@ import numpy as np
 import math
 import random
 import cv2
+from model import *
 cv2.ocl.setUseOpenCL(False)
 from torch.utils.data import Dataset
 # from MLP import *
@@ -80,8 +81,8 @@ class White(object):
         return img
 
 if __name__ == '__main__':
-    filename = 'train_list.txt'
-    train_dataset = McDataset(
+    filename = 'test_list.txt'
+    test_dataset = McDataset(
         '.',
         filename,
         transforms.Compose([
@@ -95,4 +96,35 @@ if __name__ == '__main__':
             White(),
         ]))
 
-    print(train_dataset[0][0])
+    # print(train_dataset[0][0])
+    input = test_dataset[0][0]
+    print(input.size())
+    input = input.reshape(1,3,64,64)
+    input = Variable(input)
+    model = Resnet26()
+
+    checkpoint = torch.load('checkpoint/_204.pth.tar')
+    net = Resnet26()
+    # net.load_state_dict(checkpoint['state_dict'])
+    own_state = net.state_dict()
+    state_dict = checkpoint['state_dict']
+    # print(own_state.keys())
+    for name, param in state_dict.items():
+        name = 'module.' + name
+         # print(name)
+        if name in own_state:
+            # print('here')
+            if isinstance(param, torch.nn.Parameter):  # isinstance函数来判断一个对象是否是一个已知的类型
+                # backwards compatibility for serialized parameters
+                param = param.data
+            try:
+                own_state[name].copy_(param)
+            except Exception:
+                print('While copying the parameter named {}, '
+                        'whose dimensions in the model are {} and '
+                        'whose dimensions in the checkpoint are {}.'
+                        .format(name, own_state[name].size(), param.size()))
+                print("But don't worry about it. Continue pretraining.")
+
+    output = model(input)
+    # print(output.size())

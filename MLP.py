@@ -48,9 +48,9 @@ parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                     help='learning rate (default: 0.01)')
 parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
                     help='SGD momentum (default: 0.5)')
-parser.add_argument('--decay_epoch', type=int, default=100, metavar='N',
+parser.add_argument('--decay_epoch', type=int, default=150, metavar='N',
                     help='number of epochs to train (default: 10)')
-parser.add_argument('--decay_rate', type=float, default=0.5, metavar='M',
+parser.add_argument('--decay_rate', type=float, default=0.1, metavar='M',
                     help='lr decay rate (default: 0.5)')
 parser.add_argument('--pretrained', action='store_true', default=False,
                     help='disables CUDA training')
@@ -77,7 +77,7 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 torch.manual_seed(args.seed)  # 为CPU设置种子用于生成随机数，以使得结果是确定的
 if args.cuda:
     torch.cuda.manual_seed(args.seed)  # 为当前GPU设置随机种子；如果使用多个GPU，应该使用torch.cuda.manual_seed_all()为所有的GPU设置种子。
-
+    torch.cuda.manual_seed_all(args.seed)
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 """加载数据。组合数据集和采样器，提供数据上的单或多进程迭代器
 参数：
@@ -131,10 +131,10 @@ def pretrain(model, state_dict):
     print(own_state.keys())
     for name, param in state_dict.items():
         #name = 'module.'+name
-        #name = name[7:]
+        name = name[7:]
         print(name)
         if name in own_state:
-            print('here')
+           # print('here')
             if isinstance(param, torch.nn.Parameter): # isinstance函数来判断一个对象是否是一个已知的类型
                 # backwards compatibility for serialized parameters
                 param = param.data
@@ -231,7 +231,7 @@ class ResNet(nn.Module):
         self.stage5 = self._make_layer(ResidualBlock, 512, layers[3], stride=1)
         self.avgpool = nn.AvgPool2d(4)
         self.fc = nn.Linear(2048*self.k, num_classes)
-        self.classifier = nn.Softmax(1)
+        #self.classifier = nn.Softmax(1)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -274,24 +274,29 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
     def forward(self, x):
         x = self.stage1(x)
+        stage1 = x
         # print("stage1 ",x.size())
         x = self.stage2(x)
+        stage2 = x
         # print("stage2 size ",x.size())
         x = self.stage3(x)
+        stage3 = x
         x = self.stage4(x)
+        stage4 = x
         x = self.stage5(x)
+        stage5 = x
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         avgpool = x
         x = self.fc(x)
-        self.classifier(x)
-
+        #self.classifier(x)
         return x
+        # return x,stage5,stage4,stage3,stage2,stage1
 
 def Resnet26(pretrained=False,num_classes=5):
     model = ResNet(ResidualBlock, [2, 2, 2, 2], num_classes=5)
     return model
-def adjust_learning_rate(optimizer, decay_rate=.9):
+def adjust_learning_rate(optimizer, decay_rate=.9):  #调用一次是乘0.9
     for param_group in optimizer.param_groups:
         param_group['lr'] = param_group['lr'] * decay_rate
 # class Net(nn.Module):
@@ -345,13 +350,13 @@ if args.cuda:
         model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 if args.load_path:
-    if args.resume:
+    if args.resume:#接着训
         start_epoch = load_state(args.load_path, model, optimizer=optimizer)
     else:
         start_epoch = load_state(args.load_path, model)
 # tensorboard 可视化
 tb_logger = SummaryWriter(args.save_path)
-logger = create_logger('global_logger', args.save_path+'/log.txt')
+logger = create_logger('global_logger', args.save_path+'/log.txt') # 在utils里面
 logger.info('{}'.format(args))
 
 def train(epoch):
@@ -436,13 +441,18 @@ def test(epoch):
         # volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
        # data = data.view(-1, 28,28)
         output = model(data)
+        #print('output size:', output.size())
+        output = F.softmax(output, dim=1)
         #print('output', output)
+        #print(type(output))
+        #print("target", type(target))
         test_loss += F.cross_entropy(output, target).data[0]  # Variable.data
         pred = output.data.max(1)[1]  # get the index of the max log-probability
         #print('pred', pred)
         #print('predsize',pred.size())
         # output是（64，10）的tensor，pred.size是[64]
-        correct_num += pred.eq(target.data).cpu().sum()  #如果预测正确，correct加一
+       # correct_num += pred.eq(target.data).cpu().sum()  #如果预测正确，correct加一
+        correct_num += pred.eq(target.data.view_as(pred)).long().cpu().sum()
 
         correct = pred.eq(target.data)  #如果预测正确，correct加一
         #print(target.data.size())
@@ -492,9 +502,12 @@ def test_with_tsne():
         #torch.cat是把tensor联合起来，但我不知道data，和data_all有啥区别
         # print(data_all.size())
 
-        output, avgpool = model(data)
+        output, out_stage5, out_stage4, out_stage3, out_stage2, out_stage1 = model(data)
+        #output = F.softmax(output, dim=1)
         test_loss += F.cross_entropy(output, target).data[0]  # Variable.data
-        output, avgpool = output.cpu(), avgpool.cpu()
+        output, out_stage5, out_stage4, out_stage3, out_stage2, out_stage1 = output.cpu(),out_stage5.cpu(),out_stage4.cpu(),out_stage3.cpu(), out_stage2.cpu(), out_stage1.cpu()
+        #print('output:', output)
+        #test_loss.backward()
 
         data, target = data.cpu(), target.cpu()
         if first :
@@ -511,7 +524,11 @@ def test_with_tsne():
         if first:
             pred_all = output.data.max(1)[1]
             tsne_input = output
-            tsne_input_2 = avgpool
+            tsne_input1 = out_stage1
+            tsne_input2 = out_stage2
+            tsne_input3 = out_stage3
+            tsne_input4 = out_stage4
+            tsne_input5 = out_stage5
 
         pred = output.data.max(1)[1]  # get the index of the max log-probability
         if not first:
@@ -520,7 +537,12 @@ def test_with_tsne():
             tsne_input_2 = torch.cat((tsne_input_2, avgpool), 0)
             #print(tsne_input.type(), pred_all.type())
         first = False
-        correct += pred.eq(target.data.cpu()).sum()
+        #print('target:', target.size())
+        #print(pred.eq(target.data.cpu()).size())
+        correct += pred.eq(target.data.view_as(pred)).long().cpu().sum()
+        #correct += pred.eq(target.data.cpu().view_as(pred)).sum()
+        #print('correct num:', correct)
+        #torch.cuda.empty_cache()
         # print(pred_all.size())
     tsne_input_3 = data_all
     # print(data_all.size())
@@ -533,22 +555,40 @@ def test_with_tsne():
 
     print("Computing t-SNE embedding")
     # tsne = manifold.TSNE(n_components=2, init='random', random_state=0)
+    tsne_input_origin = data_all.data.numpy()
     tsne_input = tsne_input.data.numpy()
-    tsne_input_2 = tsne_input_2.data.numpy()
-    tsne_input_3 = tsne_input_3.data.numpy()
+    tsne_input1 = tsne_input1.data.numpy()
+    tsne_input2 = tsne_input2.data.numpy()
+    tsne_input3 = tsne_input3.data.numpy()
+    tsne_input4 = tsne_input4.data.numpy()
+    tsne_input5 = tsne_input5.data.numpy()
+    # tsne_input_2 = tsne_input_2.data.numpy()
+    # tsne_input_3 = tsne_input_3.data.numpy()
     pred_all = pred_all.data.numpy()
     target_all = target_all.data.numpy()
     # data_all = pd.DataFrame(data_all, index=data_all[:, 0]),
-    tsne = manifold.TSNE(n_components=2, init='random', random_state=0)
+    tsne = manifold.TSNE(n_components=2, init='pca', learning_rate=100, random_state=0, perplexity=50, early_exaggeration=1.0)
     #tsne = manifold.TSNE(n_components=2, init='pca', random_state=0)
     #tsne_output = np.array(tsne.fit_transform(tsne_input))
-    tsne_output = np.array(tsne.fit_transform(tsne_input_2))
-
-    print('tsne_input:', tsne_input.shape, 'tsne_input_2:', tsne_input_2.shape)
-    np.save('tsne_output.npy', tsne_output)
-    np.save('tsne_input.npy', tsne_input)
-    np.save('tsne_input_2.npy', tsne_input_2)
-    np.save('tsne_input_3.npy', tsne_input_3)
+    tsne_output_origin = np.array(tsne.fit_transform(tsne_input_origin))
+    tsne_output0 = np.array(tsne.fit_transform(tsne_input))[:, np.newaxis, :]
+    tsne_output1 = np.array(tsne.fit_transform(tsne_input1))[:, np.newaxis, :]
+    tsne_output2 = np.array(tsne.fit_transform(tsne_input2))[:, np.newaxis, :]
+    tsne_output3 = np.array(tsne.fit_transform(tsne_input3))[:, np.newaxis, :]
+    tsne_output4 = np.array(tsne.fit_transform(tsne_input4))[:, np.newaxis, :]
+    tsne_output5 = np.array(tsne.fit_transform(tsne_input5))[:, np.newaxis, :]
+    print('tsne_input:', tsne_input.shape, 'tsne_input1:', tsne_input1.shape)
+    layerout_tsne = tsne_output1
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output2), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output3), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output4), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output5), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output0), axis=1)
+    np.save('layerout_tsne.npy', tsne_output)
+    np.save('tsne_output_origin.npy',tsne_output_origin)
+    # np.save('tsne_input.npy', tsne_input)
+    # np.save('tsne_input_2.npy', tsne_input_2)
+    # np.save('tsne_input_3.npy', tsne_input_3)
     np.save('pred_all.npy', pred_all)
     np.save('target_all.npy', target_all)
     #tsne_output = np.load('tsne_output.npy')
@@ -563,17 +603,18 @@ def test_with_tsne():
     for i in range(len(colors)):
         px = []
         py = []
-        px2 = []
-        py2 = []
+        #px2 = []
+        #py2 = []
 
-        index = np.where(pred_all[:,] == i)
+        #index = np.where(pred_all[:,] == i)
 
         for j in range(1000):
             if pred_all[j] == i :
                 #plt.plot(tsne_output[j, 0], tsne_output[j, 1])
                 px.append(tsne_output[j, 0])
                 py.append(tsne_output[j, 1])
-
+        print('px:', len(px))
+        #if i == 0:
         plt.scatter(px, py, s=20, c=colors[i], marker='o')
         #plt.scatter(px2, py2, s=20, c=colors[i], marker='v')
 
@@ -596,15 +637,16 @@ if __name__ == '__main__' :
     print('start_epoch:', start_epoch)
     if args.evaluate:
         args.epochs = 1
-    for epoch in range(start_epoch, args.epochs + 1):
-        if not args.evaluate:
-            train(epoch)
-        test(epoch)
-        torch.save({
-                 'epoch': epoch ,
-                 'state_dict': model.state_dict(),
-                 'best_prec1': 0,
-                 'optimizer': optimizer.state_dict(),
-             }, '%s_%s.pth.tar' % (args.save_path, epoch))
+    if not args.tsne:
+        for epoch in range(start_epoch, args.epochs + 1):
+            if not args.evaluate:
+                train(epoch)
+            test(epoch)
+            torch.save({
+                     'epoch': epoch ,
+                     'state_dict': model.state_dict(),
+                     'best_prec1': 0,
+                     'optimizer': optimizer.state_dict(),
+                 }, '%s_%s.pth.tar' % (args.save_path, epoch))
     if args.tsne:
         test_with_tsne()

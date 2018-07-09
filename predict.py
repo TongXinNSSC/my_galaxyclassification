@@ -5,9 +5,12 @@ import numpy as np
 import math
 import random
 import cv2
+import numpy as np
+from loadmodel import *
 from model import *
 cv2.ocl.setUseOpenCL(False)
 from torch.utils.data import Dataset
+import logging
 #import matplotlib.image as mpimg
 # from MLP import *
 
@@ -65,14 +68,14 @@ class White(object):
         size = img.size()
         # print(size[0])
         img = img.view(size[0], -1)
-        print(type(img))
+        # print(type(img))
         #print(img.size())
         eps = torch.ones(size[0],1)*(1/math.sqrt(size[1]))
         # print(eps.size())
         # print('img:', img)
         mean = torch.mean(img, dim=1, keepdim=True)
-        print('mean:', mean.size())
-        print(type(mean))
+        # print('mean:', mean.size())
+        # print(type(mean))
         std_tmp = torch.cat((torch.std(img, dim=1, keepdim=True), eps), dim=0)
         # print(torch.cat((torch.std(img, dim=0, keepdim=True), eps), dim=0).size())
         std = torch.max(std_tmp, dim=0)[0].expand_as(mean)
@@ -84,7 +87,8 @@ class White(object):
         return img
 
 if __name__ == '__main__':
-    filename = 'test_list.txt'
+    filename = 'training1000_list.txt'
+    cuda_flag = True 
     test_dataset = McDataset(
         '.',
         filename,
@@ -94,68 +98,93 @@ if __name__ == '__main__':
             transforms.CenterCrop((64, 64)),
             transforms.ToTensor(),
             White(),
-        ]))
-
-    # print(train_dataset[0][0])
-    num = random.randint(0, 2880)
-    print('num',num)
-    input = test_dataset[num][0]
-    img,cls,root =test_dataset.__getitem__(num)
-    print('galaxy ID : ',root[35:41])
-    print('true label: ',cls)
-    input = input.reshape(1,3,64,64)
-    input = Variable(input)
+        ]), output_index = False)
     model = Resnet26()
+    model.eval()
+    if cuda_flag :
+        model = model.cuda()
+    load_path = 'checkpoint/_204.pth.tar'
+    start_epoch = load_state(load_path,model)
+    kwargs = {'num_workers': 1, 'pin_memory': True} if cuda_flag else {}
+    # 随机取一个输入求输出
+    # test_loader = torch.utils.data.DataLoader(
+    #     test_dataset, batch_size = 1, shuffle = True, **kwargs)
+    # #test(start_epoch)
+    # correct_num = 0
+    # for batch_idx, (data, target, fname) in enumerate(test_loader):
+    #     if cuda_flag:
+    #         data, target = data.cuda(), target.cuda()
+    #     data, target = Variable(data), Variable(target)
+    #     output = model(data)
+    #     pred = output.data.max(1)[1]
+    #     root = fname[0]
+    #     print('galaxy ID : ', root[35:41])
+    #     print('true label: ', int(target))
+    #     print('predict', int(pred))
+    #     # correct_num += pred.eq(target.data.view_as(pred)).long().sum()
+    #     break
+    # print("correct number:{} ".format(correct_num))
+    #print(len(test_loader.dataset))
+ #   print("correct_num: {} accracy: {:4f}".format(correct_num, 100. * float(correct_num)/len(test_loader.dataset)))
 
-    checkpoint = torch.load('checkpoint/_204.pth.tar')
-    state_dict = checkpoint['state_dict']
-    own_state = model.state_dict()
- #   print(own_state.keys())
-    for name, param in state_dict.items():
-       # name = 'module.'+name
-        name = name[7:]
-    #    print(name)
-        if name in own_state:
-       #     print('here')
-            if isinstance(param, torch.nn.Parameter):  # isinstance函数来判断一个对象是否是一个已知的类型
-                # backwards compatibility for serialized parameters
-                param = param.data
-            try:
-                own_state[name].copy_(param)
-#                print('here')
-            except Exception:
-                print('While copying the parameter named {}, '
-                      'whose dimensions in the model are {} and '
-                      'whose dimensions in the checkpoint are {}.'
-                      .format(name, own_state[name].size(), param.size()))
-                print("But don't worry about it. Continue pretraining.")
-    output = model(input)
+
+    #求training1000和test1000的输出结果
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size = 1000, shuffle = False, **kwargs)
+    for batch_idx, (data, target, fname) in enumerate(test_loader):
+        if cuda_flag:
+            data, target = data.cuda(), target.cuda()
+        data, target = Variable(data), Variable(target)
+        output, out_stage5, out_stage4, out_stage3, out_stage2, out_stage1 = model(data)
     pred = output.data.max(1)[1]
-    print('predict',int(pred))
-    print(torch.__version__)
-    cls = int(cls)
-    if cls == 0:
-        clsname = 'round'
-    elif cls == 1:
-        clsname = 'middle'
-    elif cls == 2:
-        clsname = 'cigar'
-    elif cls == 3:
-        clsname = 'lateral'
-    else:
-        clsname = 'spiral'
+    tsne_input = output.data.numpy()
+    tsne_input1 = out_stage1.data.numpy()
+    tsne_input2 = out_stage2.data.numpy()
+    tsne_input3 = out_stage3.data.numpy()
+    tsne_input4 = out_stage4.data.numpy()
+    tsne_input5 = out_stage5.data.numpy()
+    tsne = manifold.TSNE(n_components=2, init='pca', learning_rate=100, random_state=0, perplexity=50,
+                             early_exaggeration=1.0)
+    tsne_output_origin = np.array(tsne.fit_transform(tsne_output))
+    tsne_output0 = np.array(tsne.fit_transform(tsne_input))[:, np.newaxis, :]
+    tsne_output1 = np.array(tsne.fit_transform(tsne_input1))[:, np.newaxis, :]
+    tsne_output2 = np.array(tsne.fit_transform(tsne_input2))[:, np.newaxis, :]
+    tsne_output3 = np.array(tsne.fit_transform(tsne_input3))[:, np.newaxis, :]
+    tsne_output4 = np.array(tsne.fit_transform(tsne_input4))[:, np.newaxis, :]
+    tsne_output5 = np.array(tsne.fit_transform(tsne_input5))[:, np.newaxis, :]
+    layerout_tsne = tsne_output1
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output2), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output3), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output4), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output5), axis=1)
+    layerout_tsne = np.concatenate((layerout_tsne, tsne_output0), axis=1)
+    np.save('layerout_tsne.npy', tsne_output)
+    np.save('tsne_output_origin.npy', tsne_output_origin)
+
+
+    # cls = int(cls)
+    # if cls == 0:
+    #     clsname = 'round'
+    # elif cls == 1:
+    #     clsname = 'middle'
+    # elif cls == 2:
+    #     clsname = 'cigar'
+    # elif cls == 3:
+    #     clsname = 'lateral'
+    # else:
+    #     clsname = 'spiral'
     # print(output.size())
-    pred = int(pred)
-    if pred == 0:
-        predname = 'round'
-    elif pred == 1:
-        predname = 'middle'
-    elif pred == 2:
-        predname = 'cigar'
-    elif pred == 3:
-        predname = 'lateral'
-    else:
-        predname = 'spiral'
+    # pred = int(pred)
+    # if pred == 0:
+    #     predname = 'round'
+    # elif pred == 1:
+    #     predname = 'middle'
+    # elif pred == 2:
+    #     predname = 'cigar'
+    # elif pred == 3:
+    #     predname = 'lateral'
+    # else:
+    #     predname = 'spiral'
 #     draw = mpimg.imread(root)
 #     plt.imshow(draw)  # 显示图片
 #     plt.axis('off')  # 不显示坐标轴
